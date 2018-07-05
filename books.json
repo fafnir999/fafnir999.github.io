@@ -1,0 +1,18 @@
+[
+    {
+      "id": 1,
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "views":  134,
+      "readers": 33
+    },
+
+    {
+      "id": 2,
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "views":  13,
+      "readers": 3
+    }
+
+  ]
