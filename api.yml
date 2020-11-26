@@ -1,0 +1,407 @@
+openapi: 3.0.3
+info:
+  title: OAT's Data Store API draft
+  description: List of endpoints for data exposure
+  version: 0.0.4
+
+tags:
+  - name: Delivery
+  - name: DeliveryResult
+  - name: TestTaker
+
+
+paths:
+  /api/v1/deliveries/{deliveryId}:
+    get:
+      summary: Single delivery information.
+      description: Provides general information about the delivery content and metatadat. Lists high level information about items composing the delivery with links to retrieve item definition.
+      parameters:
+        - in: path
+          name: deliveryId
+          description: Delivery identifier as provided by the delivery tool.
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Success: Returns delivery information'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/delivery'
+      tags:
+        - Delivery
+
+  /api/v1/deliveries/{deliveryId}/{itemId}:
+    get:
+      summary: Single item information.
+      description: Provides item definition including various qti elements as well as metadata propeprties.
+      parameters:
+        - in: path
+          name: deliveryId
+          description: Delivery identifier as provided by the delivery tool.
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: itemId
+          description: Qti item identifier as defined on the authoring tool.
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Success: Returns single item information'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/itemFull'
+      tags:
+        - Delivery
+
+  /api/v1/deliveries/{deliveryId}/result/{testTakerId}:
+    get:
+      summary: Assessment result for a single test taker.
+      description: Provides scoring outcomes and statistics of the whole assessment and minimal information for individual item result.
+      parameters:
+        - in: path
+          name: deliveryId
+          description: Delivery identifier as provided by the delivery tool.
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: testTakerId
+          description: Test taker identifier as provided by rostering tool during delivery execution launch process.
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Success: Returns result of an assessment for a test taker'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/deliveryResult'
+      tags:
+        - DeliveryResult
+
+  /api/v1/deliveries/{deliveryId}/result/{testTakerId}/{itemId}:
+    get:
+      summary: Assessment result for a test taker for a single item
+      description: Provides scoring final outcomes and all sumbitted attempts for the given item with detailed information about each attempt.
+      parameters:
+        - in: path
+          name: deliveryId
+          description: Delivery identifier as provided by the delivery tool.
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: testTakerId
+          description: Test taker identifier as provided by rostering tool during delivery execution launch process.
+          schema:
+            type: string
+          required: true
+        - in: path
+          name: itemId
+          description: Qti item identifier as defined on the authoring tool.
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Success: Returns result of an assessment for a test taker for a single item'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/itemResultFull'
+      tags:
+        - DeliveryResult
+
+  /api/v1/test-takers/{testTakerId}:
+    get:
+      summary: A test taker information
+      description: Provides links to all the deliveries of the assessments the given test taker participated in.
+      parameters:
+        - in: path
+          name: testTakerId
+          description: Test taker identifier as provided by rostering tool during delivery execution launch process.
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: 'Success: Returns information about a task taker'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/testTaker'
+      tags:
+        - TestTaker
+
+components:
+  schemas:
+    delivery:
+      type: object
+      title: Delivery information
+      required:
+        - deliveryId
+        - metadata
+      additionalProperties: false
+      properties:
+        deliveryId:
+          type: string
+          description: Delivery identifier as provided by the delivery tool.
+        metadata:
+          type: object
+          description: Delivery metadata represented as a dictionary of key value pairs where the value is expected as array.
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/itemPreview'
+
+    itemPreview:
+      type: object
+      title: Base item information
+      required:
+        - itemId
+        - maxScore
+        - fullInfoLink
+      properties:
+        itemId:
+          description: Qti item identifier as defined on the authoring tool.
+          type: string
+        maxScore:
+          type: number
+        fullInfoLink:
+          type: string
+          description: Link to a full item info
+
+    itemFull:
+      type: object
+      title: Full item information
+      required:
+        - itemId
+        - qtiIdentifier
+        - qtiTitle
+        - srcToolRefId
+        - assessmentItemRef
+        - maxScore
+        - itemPosition
+        - taskFormat
+        - textType
+        - metadata
+      additionalProperties: false
+      properties:
+        itemId:
+          type: string
+          description: Qti item identifier as defined on the authoring tool.
+        qtiIdentifier:
+          description: Qti item identifier as defined on the authoring tool.
+          type: string
+        qtiTitle:
+          description: Qti title identifier as defined on the authoring tool.
+          type: string
+        srcToolRefId:
+          type: string
+        assessmentItemRef:
+          description: Qti assessment item ref identifier as defined on the test manifest on authoring tool.
+          type: string
+        maxScore:
+          type: number
+        itemPosition:
+          description: The true position of item on the test. Position without taking any shuffling or branching rules into account.
+          type: integer
+        taskFormat:
+          type: string
+        textType:
+          type: string
+        metadata:
+          description: Item metadata defined on authoring tool
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: '#/components/schemas/itemMetadata'
+
+    itemMetadata:
+      type: object
+      title: Item metadata definition
+      required:
+        - puri
+        - vlabel
+        - plabel
+      properties:
+        puri:
+          type: string
+          description: Property URI defined on authoring tool
+        plabel:
+          type: string
+          description: Value label, string representation of the value, provided by content creator on authoring tool.
+        vuri:
+          type: string
+          description: Value URI if-defined on authoring tool
+        vlabel:
+          type: string
+          description: Value label, string representation of the value, provided by content creator on authoring tool.
+
+    deliveryResult:
+      type: object
+      title: Delivery Result
+      required:
+        - startTime
+        - endTime
+        - scoreMax
+        - score
+        - itemsResults
+      additionalProperties: false
+      properties:
+        scoreMax:
+          type: number
+          description: Maximum scoring outcome defined on test creation for the given delivery, aggregation of the maximum score of each item.
+        score:
+          type: number
+          description: Scoring outcome for the given delivery execution, aggregation of the score received on each  item.
+        startTime:
+          type: string
+          format: 'date-time'
+          description: Marks the begging of the delivery execution.
+        endTime:
+          type: string
+          format: 'date-time'
+          description: Marks the finalization of the delivery execution. Could be determined either by succesfull delivery sumbition or force termination.
+        itemsResults:
+          type: array
+          description: List of items and related information about scoring and responses on last attempt.
+          items:
+            $ref: '#/components/schemas/itemResultPreview'
+
+    itemResultPreview:
+      type: object
+      title: Base Item's Result
+      required:
+        - itemId
+        - score
+        - maxScore
+        - completionStatus
+        - lastAttempt
+        - fullResultLink
+      properties:
+        itemId:
+          type: string
+          description: Technical item identifier
+        score:
+          type: number
+          description: Scoring outcome for the given item.
+        maxScore:
+          type: number
+          description: Maximum Scoring outcome defined for the given item.
+        completionStatus:
+          $ref: '#/components/schemas/ItemCompletionStatus'
+        lastAttempt:
+          $ref: '#/components/schemas/itemAttempt'
+        fullResultLink:
+          type: string
+          description: Link to a full item result
+
+    itemResultFull:
+      type: object
+      title: Full Item's Result
+      required:
+        - itemId
+        - score
+        - maxScore
+        - completionStatus
+        - numAttemts
+        - itemPosition
+        - attempts
+      properties:
+        itemId:
+          type: string
+          description: Technical item identifier
+        score:
+          type: number
+          description: Scoring outcome for the given item.
+        maxScore:
+          type: number
+          description: Maximum Scoring outcome defined for the given item.
+        completionStatus:
+          $ref: '#/components/schemas/ItemCompletionStatus'
+        numAttemts:
+          type: integer
+          description: How many attempts where sumbitted for the given item.
+        itemPosition:
+          type: integer
+          description: The absolute position of the item as was presented to the test taker during the delivery execution. Could vary based on shuffling settings and be different from the true position defined on the authoring tool.
+        attempts:
+          description: List of attempts for given item
+          type: array
+          items:
+            $ref:  '#/components/schemas/itemAttempt'
+
+    itemAttempt:
+      type: object
+      title: Single attempt
+      required:
+        - startTime
+        - endTime
+        - responses
+        - duration
+      properties:
+        startTime:
+          type: string
+          format: 'date-time'
+          description: Marks the starting timestamp of the attempt
+        endTime:
+          type: string
+          format: 'date-time'
+          description: Marks the end timestamp of the attempt, when attempt is sumbitted.
+        duration:
+          type: string
+          description: Total duration of the attempt.
+        responses:
+          description: List of repsonses give on the given attempt.
+          type: array
+          items:
+            type: object
+            properties:
+              responseId:
+                type: string
+                description: Qti response identifier, as defined on authoring tool.
+              responseType:
+                type: string
+              responseValue:
+                type: string
+                description: Value of the repsonse.
+
+    testTaker:
+      type: object
+      title: Test taker
+      required:
+        - testTakerId
+        - deliveriesLinks
+      additionalProperties: false
+      properties:
+        testTakerId:
+          type: string
+          description: Test taker identifier as provided by rostering tool during delivery execution launch process.
+        deliveriesLinks:
+          description: List of links to all the deliveries of the assessments the given test taker participated in.
+          type: array
+          items:
+            type: string
+            description: Link to a delivery in which user has taken part
+
+    ItemCompletionStatus:
+      description: The status of the item in the given delivery. Describes wether the test taker attempted to provide response on the item, wether not or we don't have any information about it.
+      type: string
+      enum:
+        - completed
+        - incomplete
+        - not_attempted
+        - unknown
