@@ -125,7 +125,7 @@ paths:
       description: Provides links to all the deliveries of the assessments the given test taker participated in.
       parameters:
         - in: path
-          name: testTakerId
+          name: testTakerIdна
           description: Test taker identifier as provided by rostering tool during delivery execution launch process.
           schema:
             type: string
@@ -223,11 +223,9 @@ components:
           type: string
         metadata:
           description: Item metadata defined on authoring tool
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: '#/components/schemas/itemMetadata'
+          type: arry
+          items:
+            $ref: '#/components/schemas/itemMetadata'
 
     itemMetadata:
       type: object
@@ -342,7 +340,7 @@ components:
           description: List of attempts for given item
           type: array
           items:
-            $ref:  '#/components/schemas/itemAttempt'
+            $ref: '#/components/schemas/itemAttempt'
 
     itemAttempt:
       type: object
