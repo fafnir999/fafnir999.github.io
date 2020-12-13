@@ -187,7 +187,7 @@ components:
       title: Full item information
       required:
         - itemId
-        - qtiIdentifier
+        - qtiIdentifier #should be id for item?
         - qtiTitle
         - srcToolRefId
         - assessmentItemRef
@@ -360,7 +360,7 @@ components:
           format: 'date-time'
           description: Marks the end timestamp of the attempt, when attempt is sumbitted.
         duration:
-          type: string
+          type: int
           description: Total duration of the attempt.
         responses:
           description: List of repsonses give on the given attempt.
