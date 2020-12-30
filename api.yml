@@ -169,11 +169,11 @@ components:
       type: object
       title: Base item information
       required:
-        - itemId
+        - qtiIdentifier
         - maxScore
         - fullInfoLink
       properties:
-        itemId:
+        qtiIdentifier:
           description: Qti item identifier as defined on the authoring tool.
           type: string
         maxScore:
