@@ -178,6 +178,7 @@ components:
           type: string
         maxScore:
           type: number
+          nullable: true
         fullInfoLink:
           type: string
           description: Link to a full item info
