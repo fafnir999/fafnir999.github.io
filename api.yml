@@ -187,8 +187,7 @@ components:
       type: object
       title: Full item information
       required:
-        - itemId
-        - qtiIdentifier #should be id for item?
+        - qtiIdentifier
         - qtiTitle
         - srcToolRefId
         - assessmentItemRef
@@ -199,9 +198,6 @@ components:
         - metadata
       additionalProperties: false
       properties:
-        itemId:
-          type: string
-          description: Qti item identifier as defined on the authoring tool.
         qtiIdentifier:
           description: Qti item identifier as defined on the authoring tool.
           type: string
